@@ -1,7 +1,9 @@
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
 
-#include "tst5.h"
+#include "heart-animation.h"
+// #include "tst5.h"
+
 
 typedef RowMajorAlternatingLayout MyPanelLayout;
 typedef NeoGrbFeature MyPanelColourType;
@@ -16,6 +18,7 @@ const uint16_t left = 0;
 const uint16_t right = PanelWidth - 1;
 const uint16_t top = 0;
 const uint16_t bottom = PanelHeight - 1;
+
 
 NeoTopology<MyPanelLayout> topo(PanelWidth, PanelHeight);
 NeoPixelBus<MyPanelColourType, Neo800KbpsMethod> strip(PixelCount, PixelPin);
@@ -34,7 +37,8 @@ RgbColor black(0);
 NeoVerticalSpriteSheet<NeoBufferProgmemMethod<MyPanelColourType>> spriteSheet(
     myImageWidth,      // image width and sprite width since its vertical sprite sheet
     myImageHeight,     // image height
-    myImageHeight / 3, // sprite height
+    16, // sprite height
+    // myImageHeight/3,
     myImage);
 
 uint16_t indexSprite;
@@ -56,7 +60,7 @@ void LoopAnimUpdate(const AnimationParam &param)
 
         // draw the next frame in the sprite
         spriteSheet.Blt(strip, 0, 0, indexSprite, MyLayoutMap);
-        indexSprite = (indexSprite + 1) % 3; // increment and wrap
+        indexSprite = (indexSprite + 1) % (myImageHeight/16); // increment and wrap
     }
 }
 
@@ -68,7 +72,7 @@ void setup()
     indexSprite = 0;
 
     // we use the index 0 animation to time how often we rotate all the pixels
-    animations.StartAnimation(0, 1000, LoopAnimUpdate); // time is in ms
+    animations.StartAnimation(0, 100, LoopAnimUpdate); // time is in ms
 }
 
 void loop()
@@ -78,4 +82,8 @@ void loop()
     // any timing related routines
     animations.UpdateAnimations();
     strip.Show();
+    if (indexSprite == 0 || indexSprite == 21 || indexSprite == 26)
+        delay(1000);
+
+
 }
